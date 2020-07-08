@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private Toolbar mainToolbar;
-    private FloatingActionButton addPostBtn;
+    private ImageView addPostBtn;
     private FirebaseFirestore firebaseFirestore;
     private String current_user_id;
 
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        addPostBtn = (FloatingActionButton) findViewById(R.id.add_post_btn);
+        addPostBtn = (ImageView) findViewById(R.id.add_post_btn);
 
 
         addPostBtn.setOnClickListener(new View.OnClickListener() {

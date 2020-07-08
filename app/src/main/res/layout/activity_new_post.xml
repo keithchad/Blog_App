@@ -2,14 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/post_btn"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".NewPostActivity">
 
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/new_post_image"
         android:layout_width="0dp"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
@@ -19,10 +18,10 @@
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <EditText
-        android:id="@+id/editTextTextMultiLine"
+        android:id="@+id/new_post_desc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="72dp"
         android:ems="10"
         android:gravity="start|top"
         android:hint="@string/post_desc_hint"
@@ -31,10 +30,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/new_post_image" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/post_btn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
@@ -44,6 +43,18 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine"
+        app:layout_constraintTop_toBottomOf="@+id/new_post_desc"
         tools:text="@string/new_post_button_hint" />
+
+    <ProgressBar
+        android:id="@+id/new_post_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
