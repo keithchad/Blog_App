@@ -3,6 +3,8 @@ package com.chad.photoblogapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Build;
@@ -32,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
     private String current_user_id;
 
     private BottomNavigationView mainBottomNav;
+    private HomeFragment homeFragment;
+    private NotificationFragment notificationFragment;
+    private AccountFragment accountFragment;
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -45,6 +51,36 @@ public class MainActivity extends AppCompatActivity {
 
         addPostBtn = (ImageView) findViewById(R.id.add_post_btn);
         mainBottomNav = (BottomNavigationView) findViewById(R.id.mainBottomNav);
+
+        //FRAGMENTS
+        homeFragment = new HomeFragment();
+        notificationFragment = new NotificationFragment();
+        accountFragment = new AccountFragment();
+
+        mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                switch(item.getItemId()) {
+
+                    case R.id.bottom_action_home:
+                        replaceFragment(homeFragment);
+                        return true;
+
+                    case R.id.bottom_action_notif:
+                        replaceFragment(notificationFragment);
+                        return true;
+
+                    case R.id.bottom_action_account:
+                        replaceFragment(accountFragment);
+                        return true;
+
+                    default:
+                        return false;
+
+                }
+            }
+        });
 
 
         addPostBtn.setOnClickListener(new View.OnClickListener() {
@@ -144,4 +180,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void replaceFragment(Fragment fragment) {
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_container, fragment);
+        fragmentTransaction.commit();
+
+    }
 }
