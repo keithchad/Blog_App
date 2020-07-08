@@ -16,6 +16,7 @@ import android.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
     private String current_user_id;
 
+    private BottomNavigationView mainBottomNav;
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         firebaseFirestore = FirebaseFirestore.getInstance();
 
         addPostBtn = (ImageView) findViewById(R.id.add_post_btn);
+        mainBottomNav = (BottomNavigationView) findViewById(R.id.mainBottomNav);
 
 
         addPostBtn.setOnClickListener(new View.OnClickListener() {
