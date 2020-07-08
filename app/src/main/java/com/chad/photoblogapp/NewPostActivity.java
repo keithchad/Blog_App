@@ -35,12 +35,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import id.zelory.compressor.Compressor;
 
 public class NewPostActivity extends AppCompatActivity {
 
-    private static final int MAX_LENGTH = 100;
     private ImageView newPostImage;
     private EditText newPostDesc;
     private Button newPostBtn;
@@ -93,7 +93,7 @@ public class NewPostActivity extends AppCompatActivity {
 
                  newPostProgress.setVisibility(View.VISIBLE);
 
-                 final String randomName = random();
+                 final String randomName = UUID.randomUUID().toString();
 
                     storageReference.child("post_images").child( randomName + ".jpg").putFile(postImageUri)
                             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -102,13 +102,16 @@ public class NewPostActivity extends AppCompatActivity {
 
                                     Task<Uri> downloadUri = taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                         @Override
-                                        public void onSuccess(Uri uri) {
+                                        public void onSuccess(final Uri uri) {
 
                                             File newImageFile = new File(postImageUri.getPath());
 
                                             try {
-
-                                                compressedImageFile = new Compressor(NewPostActivity.this).compressToBitmap(newImageFile);
+                                                compressedImageFile = new Compressor(NewPostActivity.this)
+                                                        .setMaxHeight(100)
+                                                        .setMaxWidth(100)
+                                                        .setQuality(10)
+                                                        .compressToBitmap(newImageFile);
 
                                             } catch (IOException e) {
                                                 e.printStackTrace();
@@ -121,53 +124,82 @@ public class NewPostActivity extends AppCompatActivity {
                                             UploadTask uploadTask = storageReference.child("post_images/thumbs")
                                                     .child(randomName + ".jpg").putBytes(thumbData);
 
-                                            uploadTask
-
-                                            Map<String, Object> postMap = new HashMap<>();
-                                            postMap.put("image_url", uri.toString());
-                                            postMap.put("desc", desc);
-                                            postMap.put("user_id", current_user_id);
-                                            postMap.put("timestamp", FieldValue.serverTimestamp());
-
-
-
-                                            firebaseFirestore.collection("Posts").document().set(postMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                 @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
+                                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                                    if(task.isSuccessful()) {
+                                                    Task<Uri> downloadthumbUri = taskSnapshot.getStorage().getDownloadUrl()
+                                                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                                @Override
+                                                                public void onSuccess(final Uri thumburi) {
 
-                                                        Toast.makeText(NewPostActivity.this, " Post was Added", Toast.LENGTH_LONG).show();
-                                                        Intent mainIntent = new Intent(NewPostActivity.this, MainActivity.class);
-                                                        startActivity(mainIntent);
-                                                        finish();
+                                                       Map<String, Object> postMap = new HashMap<>();
+                                                       postMap.put("image_url", uri.toString());
+                                                       postMap.put("desc", desc);
+                                                       postMap.put("thumb", thumburi);
+                                                       postMap.put("user_id", current_user_id);
+                                                       postMap.put("timestamp", FieldValue.serverTimestamp());
 
-                                                    }else {
 
-                                                        String error = task.getException().getMessage();
-                                                        Toast.makeText(NewPostActivity.this, " FIRESTORE Error" + error, Toast.LENGTH_SHORT).show();
+                                                      firebaseFirestore.collection("Posts").document().set(postMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                          @Override
+                                                          public void onComplete(@NonNull Task<Void> task) {
 
-                                                        newPostProgress.setVisibility(View.INVISIBLE);
+                                                            if (task.isSuccessful()) {
 
-                                                    }
+                                                                Toast.makeText(NewPostActivity.this, " Post was Added", Toast.LENGTH_LONG).show();
+                                                                Intent mainIntent = new Intent(NewPostActivity.this, MainActivity.class);
+                                                                startActivity(mainIntent);
+                                                                finish();
+
+                                                            } else {
+
+                                                                String error = task.getException().getMessage();
+                                                                Toast.makeText(NewPostActivity.this, " FIRESTORE Error" + error, Toast.LENGTH_SHORT).show();
+
+                                                                newPostProgress.setVisibility(View.INVISIBLE);
+
+                                                            }
+
+                                                        }
+                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                          @Override
+                                                          public void onFailure(@NonNull Exception e) {
+                                                              //For thumb Uri
+                                                              Toast.makeText(NewPostActivity.this, "Failed to Upload Thumb Image to Firestore", Toast.LENGTH_SHORT).show();
+
+                                                          }
+                                                      });
+
+
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    //For Upload Task
+
+                                                    //Error Handling
 
                                                 }
                                             });
-
                                         }
+                                        }); }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
+                                            //For post Image Uri
 
                                             Toast.makeText(NewPostActivity.this, "Failed to Upload", Toast.LENGTH_SHORT).show();
 
-                                        }
+                                            }
                                     });
+
 
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            //For First OnClickListener
 
                             Toast.makeText(NewPostActivity.this, " Image Error", Toast.LENGTH_SHORT).show();
 
@@ -199,16 +231,5 @@ public class NewPostActivity extends AppCompatActivity {
         }
     }
 
-    public static String random() {
-        Random generator =  new Random();
-        StringBuilder randomStringBuilder = new StringBuilder();
-        int randomLength = generator.nextInt(MAX_LENGTH);
-        char tempChar;
-        for(int i = 0; i < randomLength; i++) {
-            tempChar = (char) (generator.nextInt(96) +32);
-            randomStringBuilder.append(tempChar);
-        }
-        return randomStringBuilder.toString();
-    }
 
 }
