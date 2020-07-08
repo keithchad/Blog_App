@@ -124,6 +124,7 @@ public class NewPostActivity extends AppCompatActivity {
                                             UploadTask uploadTask = storageReference.child("post_images/thumbs")
                                                     .child(randomName + ".jpg").putBytes(thumbData);
 
+
                                             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                 @Override
                                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -131,12 +132,12 @@ public class NewPostActivity extends AppCompatActivity {
                                                     Task<Uri> downloadthumbUri = taskSnapshot.getStorage().getDownloadUrl()
                                                             .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                                                 @Override
-                                                                public void onSuccess(final Uri thumburi) {
+                                                                public void onSuccess(Uri thumburi) {
 
                                                        Map<String, Object> postMap = new HashMap<>();
                                                        postMap.put("image_url", uri.toString());
                                                        postMap.put("desc", desc);
-                                                       postMap.put("thumb", thumburi);
+                                                       postMap.put("thumb", thumburi.toString());
                                                        postMap.put("user_id", current_user_id);
                                                        postMap.put("timestamp", FieldValue.serverTimestamp());
 
