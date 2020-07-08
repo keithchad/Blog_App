@@ -1,6 +1,7 @@
 package com.chad.photoblogapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,9 +29,14 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import id.zelory.compressor.Compressor;
 
 public class NewPostActivity extends AppCompatActivity {
 
@@ -45,6 +51,7 @@ public class NewPostActivity extends AppCompatActivity {
 
     private Uri postImageUri = null;
     private String current_user_id;
+    private Bitmap compressedImageFile;
 
 
     @Override
@@ -86,7 +93,7 @@ public class NewPostActivity extends AppCompatActivity {
 
                  newPostProgress.setVisibility(View.VISIBLE);
 
-                 String randomName = random();
+                 final String randomName = random();
 
                     storageReference.child("post_images").child( randomName + ".jpg").putFile(postImageUri)
                             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -96,6 +103,25 @@ public class NewPostActivity extends AppCompatActivity {
                                     Task<Uri> downloadUri = taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                         @Override
                                         public void onSuccess(Uri uri) {
+
+                                            File newImageFile = new File(postImageUri.getPath());
+
+                                            try {
+
+                                                compressedImageFile = new Compressor(NewPostActivity.this).compressToBitmap(newImageFile);
+
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                            compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                            byte[] thumbData = baos.toByteArray();
+
+                                            UploadTask uploadTask = storageReference.child("post_images/thumbs")
+                                                    .child(randomName + ".jpg").putBytes(thumbData);
+
+                                            uploadTask
 
                                             Map<String, Object> postMap = new HashMap<>();
                                             postMap.put("image_url", uri.toString());
