@@ -66,6 +66,7 @@ public class NewPostActivity extends AppCompatActivity {
         newPostImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 CropImage.activity()
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .setAspectRatio(1, 1)
