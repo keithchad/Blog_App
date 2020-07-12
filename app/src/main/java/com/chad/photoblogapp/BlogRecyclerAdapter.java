@@ -54,7 +54,8 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
         holder.setDescText(desc_data);
 
         final String image_url = blog_list.get(position).getImage_url();
-        holder.setBlogImage(image_url);
+        final String thumbUri = blog_list.get(position).getImage_thumb();
+        holder.setBlogImage(image_url, thumbUri);
 
         String user_id = blog_list.get(position).getUser_id();
         firebaseFirestore.collection("Users").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -115,14 +116,16 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
         }
 
         @SuppressLint("CheckResult")
-        public void setBlogImage(String downloadUri) {
+        public void setBlogImage(String downloadUri, String thumbUri) {
 
             blogImageView = mView.findViewById(R.id.blog_image);
             
             RequestOptions requestOption = new RequestOptions();
             requestOption.placeholder(R.drawable.dummy_image2);
 
-            Glide.with(context).applyDefaultRequestOptions(requestOption).load(downloadUri).into(blogImageView);
+            Glide.with(context).applyDefaultRequestOptions(requestOption).load(downloadUri).thumbnail(
+                    Glide.with(context).load(thumbUri)
+            ).into(blogImageView);
 
 
         }

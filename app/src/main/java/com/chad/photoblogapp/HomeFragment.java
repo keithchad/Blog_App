@@ -1,19 +1,17 @@
 package com.chad.photoblogapp;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,6 +34,7 @@ public class HomeFragment extends Fragment {
     private List<BlogPost> blog_list;
     private FirebaseFirestore firebaseFirestore;
     private DocumentSnapshot lastVisible;
+    private Boolean isFirstPageFirstLoad = true;
 
     private BlogRecyclerAdapter blogRecyclerAdapter;
 
@@ -64,7 +63,8 @@ public class HomeFragment extends Fragment {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                Boolean reachedBottom  = !recyclerView.canScrollVertically(1);
+                  boolean reachedBottom  = !recyclerView.canScrollVertically(1);
+
                 if(reachedBottom) {
 
                     String desc = lastVisible.getString("desc");
@@ -83,22 +83,33 @@ public class HomeFragment extends Fragment {
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(3);
 
-        firstQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        firstQuery.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
-                lastVisible = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() -1);
+                if(isFirstPageFirstLoad) {
 
+                    lastVisible = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
+
+                }
                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                     if (doc.getType() == DocumentChange.Type.ADDED) {
 
                         BlogPost blogPost = doc.getDocument().toObject(BlogPost.class);
-                        blog_list.add(blogPost);
 
+                        if(isFirstPageFirstLoad) {
+                            blog_list.add(blogPost);
+
+                        }else {
+
+                            blog_list.add(0, blogPost);
+                        }
                         blogRecyclerAdapter.notifyDataSetChanged();
 
                     }
                 }
+
+                isFirstPageFirstLoad = false;
             }
         });
         return view;
@@ -111,7 +122,7 @@ public class HomeFragment extends Fragment {
                 .startAfter(lastVisible)
                 .limit(3);
 
-        nextQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        nextQuery.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
