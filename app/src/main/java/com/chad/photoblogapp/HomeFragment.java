@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,7 @@ public class HomeFragment extends Fragment {
     private FirebaseFirestore firebaseFirestore;
     private DocumentSnapshot lastVisible;
     private Boolean isFirstPageFirstLoad = true;
+
 
     private BlogRecyclerAdapter blogRecyclerAdapter;
 
@@ -95,7 +97,9 @@ public class HomeFragment extends Fragment {
                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                     if (doc.getType() == DocumentChange.Type.ADDED) {
 
-                        BlogPost blogPost = doc.getDocument().toObject(BlogPost.class);
+                        String blogPostId = doc.getDocument().getId();
+
+                        BlogPost blogPost = doc.getDocument().toObject(BlogPost.class).withId(blogPostId);
 
                         if(isFirstPageFirstLoad) {
                             blog_list.add(blogPost);
@@ -134,7 +138,9 @@ public class HomeFragment extends Fragment {
                     for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                         if (doc.getType() == DocumentChange.Type.ADDED) {
 
-                            BlogPost blogPost = doc.getDocument().toObject(BlogPost.class);
+                            String blogPostId = doc.getDocument().getId();
+
+                            BlogPost blogPost = doc.getDocument().toObject(BlogPost.class).withId(blogPostId);
                             blog_list.add(blogPost);
 
                             blogRecyclerAdapter.notifyDataSetChanged();
