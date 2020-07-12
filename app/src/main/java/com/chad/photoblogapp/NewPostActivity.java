@@ -135,11 +135,13 @@ public class NewPostActivity extends AppCompatActivity {
                                                                 public void onSuccess(Uri thumburi) {
 
                                                        Map<String, Object> postMap = new HashMap<>();
-                                                       postMap.put("image_url   ", uri.toString());
+                                                       postMap.put("image_url", uri.toString());
                                                        postMap.put("desc", desc);
                                                        postMap.put("image_thumb", thumburi.toString());
                                                        postMap.put("user_id", current_user_id);
                                                        postMap.put("timestamp", FieldValue.serverTimestamp());
+
+
 
 
                                                       firebaseFirestore.collection("Posts").document().set(postMap).addOnCompleteListener(new OnCompleteListener<Void>() {

@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private Toolbar mainToolbar;
-    private ImageView addPostBtn;
+    private FloatingActionButton addPostBtn;
     private FirebaseFirestore firebaseFirestore;
     private String current_user_id;
 
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        addPostBtn = (ImageView) findViewById(R.id.add_post_btn);
+        addPostBtn = (FloatingActionButton) findViewById(R.id.add_post_btn);
         mainBottomNav = (BottomNavigationView) findViewById(R.id.mainBottomNav);
 
         //FRAGMENTS
@@ -57,41 +57,46 @@ public class MainActivity extends AppCompatActivity {
         notificationFragment = new NotificationFragment();
         accountFragment = new AccountFragment();
 
-        mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if(mAuth.getCurrentUser() != null) {
+            replaceFragment(homeFragment);
 
-                switch(item.getItemId()) {
+            mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-                    case R.id.bottom_action_home:
-                        replaceFragment(homeFragment);
-                        return true;
+                    switch (item.getItemId()) {
 
-                    case R.id.bottom_action_notif:
-                        replaceFragment(notificationFragment);
-                        return true;
+                        case R.id.bottom_action_home:
+                            replaceFragment(homeFragment);
+                            return true;
 
-                    case R.id.bottom_action_account:
-                        replaceFragment(accountFragment);
-                        return true;
+                        case R.id.bottom_action_notif:
+                            replaceFragment(notificationFragment);
+                            return true;
 
-                    default:
-                        return false;
+                        case R.id.bottom_action_account:
+                            replaceFragment(accountFragment);
+                            return true;
+
+                        default:
+                            return false;
+
+                    }
+                }
+            });
+
+
+            addPostBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Intent newPostIntent = new Intent(MainActivity.this, NewPostActivity.class);
+                    startActivity(newPostIntent);
 
                 }
-            }
-        });
+            });
 
-
-        addPostBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent newPostIntent = new Intent(MainActivity.this, NewPostActivity.class);
-                startActivity(newPostIntent);
-
-            }
-        });
+        }
 
     }
 

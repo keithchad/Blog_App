@@ -46,13 +46,15 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         blog_list = new ArrayList<>();
-        blog_list_view = getActivity().findViewById(R.id.blog_list_view);
+        blog_list_view = view.findViewById(R.id.blog_list_view);
 
         blogRecyclerAdapter = new BlogRecyclerAdapter(blog_list);
         blog_list_view.setLayoutManager(new LinearLayoutManager(getActivity()));
         blog_list_view.setAdapter(blogRecyclerAdapter);
 
         firebaseFirestore = FirebaseFirestore.getInstance();
+
+        Query firstQuery = 
         firebaseFirestore.collection("Posts").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {

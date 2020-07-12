@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/add_post_btn"
         android:layout_width="58dp"
         android:layout_height="54dp"
@@ -15,7 +15,19 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/mainBottomNav"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/new_post" />
+        app:srcCompat="@drawable/new_post" />-->
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_post_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/mainBottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/new_post"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/mainBottomNav"
@@ -26,7 +38,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" >
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
     <FrameLayout
         android:id="@+id/main_container"
@@ -36,6 +50,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
 
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
