@@ -5,17 +5,17 @@ import java.util.Date;
 public class BlogPost {
 
     public String user_id, image_url, desc, image_thumb;
+    public Date  timestamp;
 
-
-    public Date timeStamp;
 
     public BlogPost() {}
 
-    public BlogPost(String user_id, String image_url, String desc, String image_thumb,Date timeStamp {
+    public BlogPost(String user_id, String image_url, String desc, String image_thumb,  Date timestamp){
         this.user_id = user_id;
         this.image_url = image_url;
         this.desc = desc;
-        this.image_thumb = image_thumb;this.timeStamp = timeStamp;
+        this.image_thumb = image_thumb;
+        this.timestamp = timestamp;
     }
 
 
@@ -54,12 +54,12 @@ public class BlogPost {
 
 
 
-    public Date getTimeStamp() {
-        return timeStamp;
+    public Date getTimestamp() {
+        return timestamp;
     }
 
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
 

@@ -12,9 +12,11 @@ import android.view.ViewGroup;
 
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView blog_list_view;
     private List<BlogPost> blog_list;
     private FirebaseFirestore firebaseFirestore;
+    private DocumentSnapshot lastVisible;
 
     private BlogRecyclerAdapter blogRecyclerAdapter;
 
@@ -54,8 +57,11 @@ public class HomeFragment extends Fragment {
 
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        Query firstQuery = 
-        firebaseFirestore.collection("Posts").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        Query firstQuery = firebaseFirestore.collection("Posts")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(3);
+
+        firstQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
@@ -73,4 +79,30 @@ public class HomeFragment extends Fragment {
         });
         return view;
     }
+
+    public void loadMorePost() {
+
+        Query nextQuery = firebaseFirestore.collection("Posts")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(3);
+
+        nextQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+
+                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                    if (doc.getType() == DocumentChange.Type.ADDED) {
+
+                        BlogPost blogPost = doc.getDocument().toObject(BlogPost.class);
+                        blog_list.add(blogPost);
+
+                        blogRecyclerAdapter.notifyDataSetChanged();
+
+                    }
+                }
+            }
+        });
+
+    }
+
 }
