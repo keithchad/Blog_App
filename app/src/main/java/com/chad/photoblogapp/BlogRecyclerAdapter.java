@@ -2,6 +2,7 @@ package com.chad.photoblogapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -18,14 +20,19 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -58,6 +65,8 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+
+        holder.setIsRecyclable(false);
 
         final String blogPostId = blog_list.get(position).BlogPostId;
         final String currentUserId =  mAuth.getCurrentUser().getUid();
@@ -94,8 +103,45 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
         String dateString = DateFormat.format("MM/dd/yyyy", new Date(millisecond)).toString();
         holder.setTime(dateString);
 
+        //Get Likes Count
+        firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+
+                if(!queryDocumentSnapshots.isEmpty()) {
+
+                    int count = queryDocumentSnapshots.size();
+
+                    holder.updateLikesCount(count);
+
+                }else {
+
+                    holder.updateLikesCount(0);
+
+                }
+
+            }
+        });
+
         //GetLikes
-        firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").document(currentUserId);
+        firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").document(currentUserId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                if(documentSnapshot.exists()) {
+
+                    holder.blogLikeBtn.setImageDrawable(context.getDrawable(R.drawable.action_like_accent));
+
+                }else  {
+
+                    holder.blogLikeBtn.setImageDrawable(context.getDrawable(R.drawable.ic_action_first));
+
+
+                }
+
+            }
+        });
 
 
         holder.blogLikeBtn.setOnClickListener(new View.OnClickListener() {
@@ -199,8 +245,13 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
 
         }
 
+        public void updateLikesCount(int count) {
+
+            blogLikeCount = mView.findViewById(R.id.blog_like_count);
+            blogLikeCount.setText(count + " Likes");
+
+        }
 
     }
-
 
 }
