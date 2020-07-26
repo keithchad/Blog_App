@@ -5,4 +5,7 @@
     <color name="colorAccent">#F44336</color>
     <color name="likeBtnGray">#747474</color>
     <color name="likeBtnAccent">#F44336</color>
+    <color name="colorTitle">#313131</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorCardViewBackground">#E9EAED</color>
 </resources>

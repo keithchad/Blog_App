@@ -12,8 +12,6 @@ import android.view.ViewGroup;
  * A simple {@link Fragment} subclass.
  */
 public class AccountFragment extends Fragment {
-
-
     public AccountFragment() {
         // Required empty public constructor
     }

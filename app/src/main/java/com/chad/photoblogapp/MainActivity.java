@@ -52,30 +52,34 @@ public class MainActivity extends AppCompatActivity {
         addPostBtn = (FloatingActionButton) findViewById(R.id.add_post_btn);
         mainBottomNav = (BottomNavigationView) findViewById(R.id.mainBottomNav);
 
-        //FRAGMENTS
-        homeFragment = new HomeFragment();
-        notificationFragment = new NotificationFragment();
-        accountFragment = new AccountFragment();
+
 
         if(mAuth.getCurrentUser() != null) {
-            replaceFragment(homeFragment);
+
+            //FRAGMENTS
+            homeFragment = new HomeFragment();
+            notificationFragment = new NotificationFragment();
+            accountFragment = new AccountFragment();
+            initializeFragment();
 
             mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
+                    Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_container);
+
                     switch (item.getItemId()) {
 
                         case R.id.bottom_action_home:
-                            replaceFragment(homeFragment);
+                            replaceFragment(homeFragment, currentFragment);
                             return true;
 
                         case R.id.bottom_action_notif:
-                            replaceFragment(notificationFragment);
+                            replaceFragment(notificationFragment, currentFragment);
                             return true;
 
                         case R.id.bottom_action_account:
-                            replaceFragment(accountFragment);
+                            replaceFragment(accountFragment, currentFragment);
                             return true;
 
                         default:
@@ -99,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+
 
     @Override
     protected void onStart() {
@@ -182,6 +188,48 @@ public class MainActivity extends AppCompatActivity {
         Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(loginIntent);
         finish();
+    }
+
+    private void initializeFragment() {
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        fragmentTransaction.add(R.id.main_container, homeFragment);
+        fragmentTransaction.add(R.id.main_container, notificationFragment);
+        fragmentTransaction.add(R.id.main_container, accountFragment);
+
+        fragmentTransaction.hide(notificationFragment);
+        fragmentTransaction.hide(accountFragment);
+
+        fragmentTransaction.commit();
+    }
+
+    private void replaceFragment(Fragment fragment, Fragment currentFragment) {
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        if(fragment == homeFragment) {
+
+            fragmentTransaction.hide(accountFragment);
+            fragmentTransaction.hide(notificationFragment);
+
+        }
+        if(fragment == accountFragment) {
+
+            fragmentTransaction.hide(homeFragment);
+            fragmentTransaction.hide(notificationFragment);
+
+        }
+        if(fragment == notificationFragment) {
+
+            fragmentTransaction.hide(homeFragment);
+            fragmentTransaction.hide(accountFragment);
+
+        }
+        fragmentTransaction.show(fragment);
+
+        fragmentTransaction.commit();
+
     }
 
 
